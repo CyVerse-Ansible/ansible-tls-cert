@@ -6,6 +6,15 @@
     - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
     - "{{ ansible_distribution }}.yml"
 
+- name: Ensure distro default cert paths exist
+  tags: [ensure-distro-cert-paths]
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ TLS_PRIVKEY_DEST_DIR }}"
+    - "{{ TLS_CERT_DEST_DIR }}"
+
 - include: deploy-provided.yml
   when: TLS_PRIVKEY_SRC_FILE != false and TLS_CERT_SRC_FILE != false and TLS_CREATE_SELFSIGNED == false
 
