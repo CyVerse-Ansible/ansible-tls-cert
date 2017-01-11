@@ -1,0 +1,4 @@
+---
+
+TLS_CERT_DEST_DIR: /etc/pki/tls/certs
+TLS_PRIVKEY_DEST_DIR: /etc/pki/tls/private

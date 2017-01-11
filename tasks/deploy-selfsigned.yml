@@ -1,0 +1,36 @@
+---
+
+- name: TLS_DEST_BASENAME set to "selfsigned" if not already overridden
+  set_fact:
+    TLS_DEST_BASENAME: selfsigned
+  when: TLS_DEST_BASENAME == false
+
+- name: Self-signed certificate and private key created
+  tags: [selfsigned-cert-created]
+  command: >
+    openssl req -new
+    -x509
+    -nodes
+    -extensions v3_ca
+    -days 3650
+    -subj "/"
+    -keyout {{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key
+    -out {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt
+  args:
+    creates: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt"
+
+- name: Empty CA bundle file created
+  tags: [selfsigned-empty-bundle-created]
+  file:
+    path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cabundle.crt"
+    state: touch
+  # The following two lines work around https://github.com/ansible/ansible-modules-core/issues/170
+  register: touch_log
+  changed_when: touch_log.diff.before.state != "file"
+
+- name: Full certificate chain (same as bare self-signed certificate) created
+  tags: [selfsigned-fullchain-created]
+  copy:
+    src: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt"
+    dest: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt"
+    remote_src: true

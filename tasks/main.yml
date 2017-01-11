@@ -1,0 +1,20 @@
+---
+
+- name: Distro-specific variables gathered
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
+    - "{{ ansible_distribution }}.yml"
+
+- include: deploy-provided.yml
+  when: TLS_PRIVKEY_SRC_FILE != false and TLS_CERT_SRC_FILE != false and TLS_CREATE_SELFSIGNED == false
+
+- include: deploy-selfsigned.yml
+  when: TLS_CREATE_SELFSIGNED == true or TLS_PRIVKEY_SRC_FILE == false or TLS_CERT_SRC_FILE == false
+
+- name: Restricted file permissions set on private key
+  when: ansible_distribution == "CentOS"
+  file:
+    path: "{{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key"
+    owner: root
+    mode: 0600

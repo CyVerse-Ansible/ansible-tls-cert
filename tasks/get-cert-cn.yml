@@ -1,0 +1,24 @@
+---
+
+# Would do this as a local_action on the deployment host, but for the unpredictable ability to resolve
+# relative file paths from the working directory of commands run with local_action
+
+- name: Certificate copied to temporary location on target
+  copy:
+    src: "{{ TLS_CERT_SRC_FILE }}"
+    dest: /tmp/ansible_tmp_cert
+
+- name: CN of provided certificate queried to determine TLS_DEST_BASENAME
+  # The following local_action may break if TLS_CERT_SRC_FILE is a relative path that is not resolveable from whichever working directory this is run
+  shell: openssl x509 -noout -subject -in /tmp/ansible_tmp_cert | sed -e 's/^subject.*CN=\([a-zA-Z0-9\.\-\*]*\).*$/\1/'
+  register: CERT_CN
+  changed_when: false
+
+- name: Certificate deleted from temporary location on target
+  file:
+    path: /tmp/ansible_tmp_cert
+    state: absent
+
+- name: TLS_DEST_BASENAME set from CN of provided certificate
+  set_fact:
+    TLS_DEST_BASENAME: "{{ CERT_CN.stdout }}"

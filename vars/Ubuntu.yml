@@ -1,0 +1,4 @@
+---
+
+TLS_CERT_DEST_DIR: /etc/ssl/certs
+TLS_PRIVKEY_DEST_DIR: /etc/ssl/private
