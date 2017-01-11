@@ -19,10 +19,10 @@
   args:
     creates: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt"
 
-- name: Empty CA bundle file created
+- name: Empty CA chain file created
   tags: [selfsigned-empty-bundle-created]
   file:
-    path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cabundle.crt"
+    path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt"
     state: touch
   # The following two lines work around https://github.com/ansible/ansible-modules-core/issues/170
   register: touch_log

@@ -14,12 +14,12 @@
     - src_path: "{{ TLS_CERT_SRC_FILE }}"
       dest_path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt"
     - src_path: "{{ TLS_CACHAIN_SRC_FILE }}"
-      dest_path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cabundle.crt"
+      dest_path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt"
 
 - name: Full certificate chain created
   shell: >
     cat {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt
-    {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cabundle.crt >>
+    {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt >>
     {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt
   args:
     creates: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt"

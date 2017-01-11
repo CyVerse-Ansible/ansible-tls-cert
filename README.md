@@ -38,7 +38,7 @@ Role Variables
 
 If you specify at least a TLS_PRIVKEY_SRC_FILE and a TLS_CERT_SRC_FILE, then the provided files will be installed to the target. (Ansible will look in "files" directory relative to playbook if you specify a bare filename or relative path.) If these variables are not set by the deployer, then the role will create a self-signed certificate instead, with files selfsigned.crt and selfsigned.key. You can explicitly set `TLS_CREATE_SELFSIGNED: true` to override the default behavior and force creation of a self-signed certificate.
 
-`*` If the deployer provides a certificate, then the certificate's indicated CN (domain) will be used as the base name of the files on the target (e.g. `example.com.key`, `example.com.crt`, `example.com.cabundle.crt`, and `example.com.fullchain.crt` for example.com). If this role creates a self-signed certificate, the files will be named with "selfsigned" as the base name. In either case, setting `TLS_DEST_BASENAME` overrides this filename.
+`*` If the deployer provides a certificate, then the certificate's indicated CN (domain) will be used as the base name of the files on the target (e.g. `example.com.key`, `example.com.crt`, `example.com.chain.crt`, and `example.com.fullchain.crt` for example.com). If this role creates a self-signed certificate, the files will be named with "selfsigned" as the base name. In either case, setting `TLS_DEST_BASENAME` overrides this filename.
 
 `**` By default, certificates and private keys are placed in the distro-specific system-wide default directories (but this can be overridden).
 
@@ -59,7 +59,7 @@ If you already have a certificate to install:
       vars:
          - TLS_PRIVKEY_SRC_FILE: example.com.key
          - TLS_CERT_SRC_FILE: example.com.crt
-         - TLS_CACHAIN_SRC_FILE: example.com.cabundle.crt
+         - TLS_CACHAIN_SRC_FILE: example.com.cachain.crt
 
 If you want to create a self-signed certificate, just call the role with no variables:
 
