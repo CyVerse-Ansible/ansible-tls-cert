@@ -16,10 +16,18 @@
     - "{{ TLS_CERT_DEST_DIR }}"
 
 - include: deploy-provided.yml
-  when: not TLS_CREATE_SELFSIGNED and TLS_PRIVKEY_SRC_FILE is defined and TLS_CERT_SRC_FILE is defined
+  when: >
+      not TLS_CREATE_SELFSIGNED and
+      TLS_PRIVKEY_SRC_FILE is defined and
+      TLS_CERT_SRC_FILE is defined and
+      TLS_CACHAIN_SRC_FILE is defined
 
 - include: deploy-selfsigned.yml
-  when: TLS_CREATE_SELFSIGNED or TLS_PRIVKEY_SRC_FILE is undefined or TLS_CERT_SRC_FILE is undefined
+  when: >
+      TLS_CREATE_SELFSIGNED or
+      TLS_PRIVKEY_SRC_FILE is undefined or
+      TLS_CERT_SRC_FILE is undefined or
+      TLS_CACHAIN_SRC_FILE is undefined
 
 - name: Restricted file permissions set on private key
   when: ansible_distribution == "CentOS"
