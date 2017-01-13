@@ -28,9 +28,9 @@ Role Variables
 
 | Variable                | Required | Default             | Choices     | Comments                                   |
 |-------------------------|----------|---------------------|-------------|--------------------------------------------|
-| TLS_PRIVKEY_SRC_FILE    | no       | false               |             | Path to private key on deployer system     |
-| TLS_CERT_SRC_FILE       | no       | false               |             | Path to certificate on deployer system     |
-| TLS_CACHAIN_SRC_FILE    | no       | false               |             | Path to CA chain on deployer system        |
+| TLS_PRIVKEY_SRC_FILE    | no       |                     |             | Path to private key on deployer system     |
+| TLS_CERT_SRC_FILE       | no       |                     |             | Path to certificate on deployer system     |
+| TLS_CACHAIN_SRC_FILE    | no       |                     |             | Path to CA chain on deployer system        |
 | TLS_DEST_BASENAME       | no       | provided cert CN*   |             | Base filename of installed certificate     |
 | TLS_CREATE_SELFSIGNED   | no       | false               | true, false | Explicitly creates self-signed certificate |
 | TLS_CERT_DEST_DIR       | no       | (distro-specific)   |             | Directory for certificates on target host  |
