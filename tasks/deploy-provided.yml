@@ -1,7 +1,7 @@
 ---
 
 - include: get-cert-cn.yml
-  when: TLS_DEST_BASENAME == false
+  when: TLS_DEST_BASENAME is undefined
 
 - name: Certificate files copied to target
   tags: [certs-copied]
