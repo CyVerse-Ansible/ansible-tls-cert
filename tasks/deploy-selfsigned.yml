@@ -3,7 +3,7 @@
 - name: TLS_DEST_BASENAME set to "selfsigned" if not already overridden
   set_fact:
     TLS_DEST_BASENAME: selfsigned
-  when: TLS_DEST_BASENAME == false
+  when: TLS_DEST_BASENAME is undefined
 
 - name: Self-signed certificate and private key created
   tags: [selfsigned-cert-created]
