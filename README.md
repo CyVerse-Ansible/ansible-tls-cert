@@ -1,8 +1,8 @@
 TLS Certificate
 =========
 
-Does one of two things depending on configuration:
-- Installs your TLS certificate, private key, and CA certificate bundle to target system.
+Installs TLS (SSL) certificates to the target, in one of two ways depending on configuration:
+- Installs your provided TLS certificate, private key, and CA certificate bundle to target system.
 - Deploys a new self-signed certificate + key to target system.
 
 In either case, automatically creates a "full chain" file (containing certificate + CA bundle, suitable for use with Nginx) as well.
