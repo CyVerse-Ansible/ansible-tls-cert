@@ -19,7 +19,5 @@
 - name: Full certificate chain created
   shell: >
     cat {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt
-    {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt >>
+    {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt >
     {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt
-  args:
-    creates: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt"
