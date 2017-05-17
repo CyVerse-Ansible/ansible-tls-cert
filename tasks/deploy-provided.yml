@@ -16,34 +16,10 @@
     - src_path: "{{ TLS_CACHAIN_SRC_FILE }}"
       dest_path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt"
 
-# These series of tasks deserve an explanation.
-#
-# In the task: 'Full certificate chain created', we must concatenate several
-# files. However we should only concatenate the files when any of the input
-# files have changed. At this time, ansible does not have a mechanism for
-# this. Here we manually check the timestamps of the dependencies and the
-# output and if the dependencies are newer, then we recreate the output file.
-# a la make.
-
-- command: stat -c "%Y" "{{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key"
-  register: key_timestamp
-  changed_when: False
-- command: stat -c "%Y"  "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt"
-  register: crt_timestamp
-  changed_when: False
-- command: stat -c "%Y"  "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt"
-  register: cachain_timestamp
-  changed_when: False
-- command: stat -c "%Y"  "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt"
-  register: fullchain_timestamp
-  ignore_errors: yes # Intentionally fail, if the file doesn't exist
-  changed_when: False
-
 - name: Full certificate chain created
   shell: >
     cat {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt
     {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt >>
     {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt
-  when: fullchain_timestamp|failed or (key_timestamp.stdout|int()     > fullchain_timestamp.stdout|int())
-                                   or (crt_timestamp.stdout|int()     > fullchain_timestamp.stdout|int())
-                                   or (cachain_timestamp.stdout|int() > fullchain_timestamp.stdout|int())
+  args:
+    creates: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt"
