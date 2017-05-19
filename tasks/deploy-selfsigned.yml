@@ -1,4 +1,13 @@
 ---
+- name: Create a directory to store temporary files
+  file:
+    path: "{{ role_path }}/build"
+    state: directory
+
+- name: Generate ssl configuration file
+  template:
+    src: "{{ role_path }}/templates/openssl-req.cnf.j2"
+    dest: "{{ role_path }}/build/openssl-req.cnf"
 
 - name: TLS_DEST_BASENAME set to "selfsigned" if not already overridden
   set_fact:
@@ -8,12 +17,12 @@
 - name: Self-signed certificate and private key created
   tags: [selfsigned-cert-created]
   command: >
-    openssl req -new
+    openssl req
+    -config "{{ role_path }}/build/openssl-req.cnf"
+    -newkey rsa:2048
     -x509
     -nodes
-    -extensions v3_ca
     -days 3650
-    -subj "/"
     -keyout {{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key
     -out {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt
   args:
