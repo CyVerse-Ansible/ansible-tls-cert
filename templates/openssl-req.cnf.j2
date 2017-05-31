@@ -1,0 +1,27 @@
+RANDFILE = $ENV::HOME/.rnd
+
+[ req ]
+prompt = no
+distinguished_name = server_distinguished_name
+x509_extensions    = server_req_extensions
+string_mask        = utf8only
+
+[ server_distinguished_name ]
+C            = 'US'
+ST           = 'Arizona')
+L            = 'Tucson')
+O            = 'Organization Name')
+OU           = 'Organization Division')
+CN           = {{ TLS_SUBJECT_ALTERNATE_NAME | default(ansible_fqdn) }}
+emailAddress = 'test@example.com'
+
+[ server_req_extensions ]
+authorityKeyIdentifier = keyid,issuer
+subjectKeyIdentifier   = hash
+basicConstraints       = CA:FALSE
+keyUsage               = digitalSignature, keyEncipherment
+subjectAltName         = @alternate_names
+nsComment              = "OpenSSL Generated Certificate"
+
+[ alternate_names ]
+DNS.1 = {{ TLS_SUBJECT_ALTERNATE_NAME | default(ansible_fqdn) }}
