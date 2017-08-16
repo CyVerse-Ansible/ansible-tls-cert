@@ -1,4 +1,4 @@
-Copyright (c) 2011, The Arizona Board of Regents on behalf of
+Copyright (c) 2011 - 2017, The Arizona Board of Regents on behalf of
 The University of Arizona
 
 All rights reserved.
