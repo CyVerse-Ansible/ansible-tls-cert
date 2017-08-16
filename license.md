@@ -3,11 +3,10 @@ The University of Arizona
 
 All rights reserved.
 
-Developed by: CyVerse as a collaboration between
-participants at BIO5 at The University of Arizona (the primary hosting
-institution), Cold Spring Harbor Laboratory, The University of Texas at
-Austin, and individual contributors. Find out more at
-http://www.cyverse.org/.
+Developed by: CyVerse as a collaboration between participants at BIO5 at 
+The University of Arizona (the primary hosting institution), Cold Spring 
+Harbor Laboratory, The University of Texas at Austin, and individual 
+contributors. Find out more at http://www.cyverse.org/.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -18,11 +17,11 @@ met:
  * Redistributions in binary form must reproduce the above copyright
    notice, this list of conditions and the following disclaimer in the
    documentation and/or other materials provided with the distribution.
- * Neither the name of the CyVerse, BIO5, The University
-   of Arizona, Cold Spring Harbor Laboratory, The University of Texas at
-   Austin, nor the names of other contributors may be used to endorse or
-   promote products derived from this software without specific prior
-   written permission.
+ * Neither the name of the CyVerse, BIO5, The University of Arizona, 
+   Cold Spring Harbor Laboratory, The University of Texas at Austin, nor 
+   the names of other contributors may be used to endorse or promote 
+   products derived from this software without specific prior written 
+   permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
