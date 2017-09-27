@@ -1,0 +1,6 @@
+- name: File paths registered
+  set_fact:
+    TLS_PRIVKEY_PATH: '{{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key'
+    TLS_CERT_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt'
+    TLS_CACHAIN_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt'
+    TLS_FULLCHAIN_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt'
