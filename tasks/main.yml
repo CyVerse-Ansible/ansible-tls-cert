@@ -21,15 +21,14 @@
 
 - include: deploy-provided.yml
   when: >
-      not TLS_LETSENCRYPT and
-      not TLS_CREATE_SELFSIGNED and
+      TLS_LETSENCRYPT is not defined and
       TLS_PRIVKEY_SRC_FILE is defined and
       TLS_CERT_SRC_FILE is defined and
       TLS_CACHAIN_SRC_FILE is defined
 
 - include: deploy-selfsigned.yml
   when: >
-      not TLS_LETSENCRYPT and
+      TLS_LETSENCRYPT is not defined and
       TLS_PRIVKEY_SRC_FILE is not defined and
       TLS_CERT_SRC_FILE is not defined and
       TLS_CACHAIN_SRC_FILE is not defined
