@@ -1,7 +1,7 @@
 ---
 
 - include: get-cert-cn.yml
-  when: 'TLS_DEST_BASENAME is undefined'
+  when: 'TLS_COMMON_NAME is undefined'
 
 - include: register-file-paths.yml
 
@@ -11,11 +11,11 @@
     src: '{{ item.src_path }}'
     dest: '{{ item.dest_path }}'
   with_items:
-    - src_path: '{{ TLS_PRIVKEY_SRC_FILE }}'
+    - src_path: '{{ TLS_BYO_PRIVKEY_SRC }}'
       dest_path: '{{ TLS_PRIVKEY_PATH }}'
-    - src_path: '{{ TLS_CERT_SRC_FILE }}'
+    - src_path: '{{ TLS_BYO_CERT_SRC }}'
       dest_path: '{{ TLS_CERT_PATH }}'
-    - src_path: '{{ TLS_CACHAIN_SRC_FILE }}'
+    - src_path: '{{ TLS_BYO_CACHAIN_SRC }}'
       dest_path: '{{ TLS_CACHAIN_PATH }}'
 
 # These series of tasks deserve an explanation.

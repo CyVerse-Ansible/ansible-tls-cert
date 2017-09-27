@@ -12,26 +12,23 @@ Supports Ubuntu LTS 14+ and CentOS 6+, adding support for other distros would be
 [![Build Status](https://travis-ci.org/CyVerse-Ansible/ansible-tls-cert.svg?branch=master)](https://travis-ci.org/CyVerse-Ansible/ansible-tls-cert)
 [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-tls--cert-blue.svg)](https://galaxy.ansible.com/CyVerse-Ansible/tls-cert/)
 
-## Role Variables
+## How to Use
+- If you want to create and deploy a self-signed certificate, don't define anything
+- If you want to Bring Your Own certificate, set the `TLS_BYO` vars (Ansible will look in "files" directory relative to playbook if you specify a bare filename or relative path.)
+- If you want to use Let's Encrypt, set the `TLS_LETSENCRYPT` vars
 
-How to configure? Minimally:
-- If you want to deploy a provided certificate, define the `TLS_*_SRC_FILE` vars. (Ansible will look in "files" directory relative to playbook if you specify a bare filename or relative path.)
-- If you want to create+deploy a self-signed certificate, don't define any of `TLS_*_SRC_FILE`
-- If you want to use Let's Encrypt, set `TLS_LETSENCRYPT: true` and define `TLS_LETSENCRYPT_EMAIL`, consider also defining `TLS_LETSENCRYPT_TLS_SERVICE`
-- If not deploying a provided certificate, consider also setting `TLS_COMMON_NAME`
+
+## Role Variables
 
 | Variable                      | Required                     | Default             | Choices     | Comments                                                                    |
 |-------------------------------|------------------------------|---------------------|-------------|-----------------------------------------------------------------------------|
-| TLS_PRIVKEY_SRC_FILE          | no                           |                     |             | Path to private key on deployer system                                      |
-| TLS_CERT_SRC_FILE             | no                           |                     |             | Path to certificate on deployer system                                      |
-| TLS_CACHAIN_SRC_FILE          | no                           |                     |             | Path to CA chain on deployer system                                         |
-| TLS_COMMON_NAME               | no                           | ansible_fqdn        |             | The fully qualified domain for the certficate generated or obtained from LE |
-| TLS_DEST_BASENAME             | no                           | provided cert CN*   |             | Base filename of installed certificate (ignored when using LE)              |
-| TLS_CERT_DEST_DIR             | no                           | (distro-specific**) |             | Directory for certificates on target host (ignored when using LE)           |
-| TLS_PRIVKEY_DEST_DIR          | no                           | (distro-specific**) |             | Directory for private keys on target host (ignored when using LE)           |
-| TLS_LETSENCRYPT               | no                           | false               | true, false | Obtain a certificate using Let's Encrypt                                    |
+| TLS_COMMON_NAME               | no                           | ansible_fqdn        |             | The fully qualified domain for the certficate                               |
+| TLS_BYO_PRIVKEY_SRC           | no                           |                     |             | Path to private key on deployer system                                      |
+| TLS_BYO_CERT_SRC              | no                           |                     |             | Path to certificate on deployer system                                      |
+| TLS_BYO_CACHAIN_SRC           | no                           |                     |             | Path to CA chain on deployer system                                         |
+| TLS_LETSENCRYPT_ENABLE        | no                           | false               | true, false | Obtain a certificate using Let's Encrypt                                    |
 | TLS_LETSENCRYPT_TLS_SERVICE   | no                           |                     |             | Name of service to stop when obtaining certificate and restart upon renewal |
-| TLS_LETSENCRYPT_EMAIL         | when TLS_LETSENCRYPT is true |                     |             | Email address to associate with Let's Encrypt certificate                   |
+| TLS_LETSENCRYPT_EMAIL         | when TLS_LETSENCRYPT_ENABLE  |                     |             | Email address to associate with Let's Encrypt certificate                   |
 
 These variables are registered by this role for use in your downstream automations:
 
@@ -46,8 +43,6 @@ These variables are registered by this role for use in your downstream automatio
 
 `*` If the deployer provides a certificate, then the certificate's indicated CN (domain) will be used as the base name of the files on the target (e.g. `example.com.key`, `example.com.crt`, `example.com.cachain.crt`, and `example.com.fullchain.crt` for example.com). If this role creates a self-signed certificate, the files will be named with "selfsigned" as the base name. In either case, setting `TLS_DEST_BASENAME` overrides this filename.
 
-`**` By default, certificates and private keys are placed in the distro-specific system-wide default directories (but this can be overridden).
-
 ## Caveats / Notices
 - `openssl` must be available on the _deployment host_ if using this role to deploy a provided certificate, and on the _target host_ if creating+deploying a self-signed certificate. These are likely already true for any modern Linux system.
 
@@ -61,21 +56,21 @@ None
 
 ## Example Playbook
 
+If you want to create a self-signed certificate, just call the role with no variables:
+
+    - hosts: all
+      roles:
+        - tls-cert
+
 If you already have a certificate to install:
 
     - hosts: all
       roles:
         - tls-cert
       vars:
-        - TLS_PRIVKEY_SRC_FILE: 'example.com.key'
-        - TLS_CERT_SRC_FILE: 'example.com.crt'
-        - TLS_CACHAIN_SRC_FILE: 'example.com.cachain.crt'
-
-If you want to create a self-signed certificate, just call the role with no variables:
-
-    - hosts: all
-      roles:
-        - tls-cert
+        - TLS_BYO_PRIVKEY_SRC: 'example.com.key'
+        - TLS_BYO_CERT_SRC: 'example.com.crt'
+        - TLS_BYO_CACHAIN_SRC: 'example.com.cachain.crt'
 
 If you want to use Let's Encrypt (example Nginx web server):
 
@@ -83,7 +78,7 @@ If you want to use Let's Encrypt (example Nginx web server):
       roles:
         - tls-cert
       vars:
-        - TLS_LETSENCRYPT: 'true'
+        - TLS_LETSENCRYPT_ENABLE: 'true'
         - TLS_LETSENCRYPT_HTTPS_SERVICE: 'nginx'
         - TLS_LETSENCRYPT_EMAIL: 'dont@spam.me'
 
