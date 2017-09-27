@@ -26,7 +26,7 @@
     TLS_CERT_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt'
     TLS_CACHAIN_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt'
     TLS_FULLCHAIN_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt'
-  when: TLS_LETSENCRYPT is undefined
+  when: TLS_LETSENCRYPT is not defined
 
 - include: deploy-provided.yml
   when: >
@@ -39,9 +39,9 @@
 - include: deploy-selfsigned.yml
   when: >
       not TLS_LETSENCRYPT and
-      TLS_PRIVKEY_SRC_FILE is undefined and
-      TLS_CERT_SRC_FILE is undefined and
-      TLS_CACHAIN_SRC_FILE is undefined
+      TLS_PRIVKEY_SRC_FILE is not defined and
+      TLS_CERT_SRC_FILE is not defined and
+      TLS_CACHAIN_SRC_FILE is not defined
 
 - name: Restricted file permissions set on private key
   when: >
