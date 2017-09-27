@@ -1,0 +1,130 @@
+---
+
+- name: File paths registered
+  set_fact:
+    TLS_PRIVKEY_PATH: '/etc/letsencrypt/live/{{ TLS_COMMON_NAME }}/privkey.pem'
+    TLS_CERT_PATH: '/etc/letsencrypt/live/{{ TLS_COMMON_NAME }}/cert.pem'
+    TLS_CACHAIN_PATH: '/etc/letsencrypt/live/{{ TLS_COMMON_NAME }}/chain.pem'
+    TLS_FULLCHAIN_PATH: '/etc/letsencrypt/live/{{ TLS_COMMON_NAME }}/fullchain.pem'
+
+- name: certbot installed on CentOS 6
+  get_url:
+    url: 'https://dl.eff.org/certbot-auto'
+    dest: '/opt/certbot-auto'
+    mode: 'a+x'
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"'
+
+- name: certbot executable set for CentOS 6
+  set_fact:
+    certbot_executable: '/opt/certbot-auto'
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "6"'
+
+- name: EPEL enabled for CentOS 7
+  yum:
+    name: 'epel-release'
+    state: 'installed'
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"'
+
+# Todo enable EPEL optional channel?
+
+- name: certbot installed for CentOS 7
+  yum:
+    name: 'certbot'
+    state: 'installed'
+  when: 'ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"'
+
+- name: PPA dependency installed for Ubuntu
+  apt:
+    name: 'software-properties-common'
+    state: 'installed'
+  when: 'ansible_distribution == "Ubuntu"'
+
+- name: PPA dependency added for Ubuntu
+  apt_repository:
+    repo: 'ppa:certbot/certbot'
+    update_cache: true
+  when: 'ansible_distribution == "Ubuntu"'
+
+- name: certbot installed on Ubuntu
+  apt:
+    name: 'certbot'
+    state: 'latest'
+  when: 'ansible_distribution == "Ubuntu"'
+
+# To avoid hitting https://letsencrypt.org/docs/rate-limits
+# - Check to see if valid certificate already exists for requested domain
+# - Don't run certbot if a valid certificate already exists
+
+- name: Test if cert already exists
+  stat:
+    path: '{{ TLS_CERT_PATH }}'
+    follow: 'yes'
+  register: 'cert_stat'
+
+- name: Test if cert already exists
+  set_fact:
+    le_obtain_cert: true
+  when: 'cert_stat.stat.islnk is not defined'
+
+- name: TLS-using service stopped prior to obtaining certificate
+  service:
+    name: '{{ TLS_LETSENCRYPT_TLS_SERVICE }}'
+    state: 'stopped'
+  when: 'le_obtain_cert == true and TLS_LETSENCRYPT_TLS_SERVICE is defined'
+
+- name: Ensure nothing is listening on port 443
+  wait_for:
+    port: '443'
+    state: 'stopped'
+    timeout: '10'
+  when: 'le_obtain_cert == true'
+
+- name: Certificate obtained
+  command: >-
+    {{ certbot_executable }} certonly
+    --standalone
+    --keep-until-expiring
+    -n
+    --agree-tos
+    --email {{ TLS_LETSENCRYPT_EMAIL }}
+    --domain {{ TLS_COMMON_NAME }}
+  when: 'le_obtain_cert == true'
+
+- name: TLS-using service started after obtaining certificate
+  service:
+    name: '{{ TLS_LETSENCRYPT_TLS_SERVICE }}'
+    state: 'started'
+  when: 'le_obtain_cert == true and TLS_LETSENCRYPT_TLS_SERVICE is defined'
+
+- name: Renewal command set
+  set_fact:
+    renewal_command: >-
+      {{ certbot_executable }} renew
+      --pre-hook "service {{ TLS_LETSENCRYPT_TLS_SERVICE }} stop"
+      --post-hook "service {{ TLS_LETSENCRYPT_TLS_SERVICE }} start"
+      -n
+  when: 'TLS_LETSENCRYPT_TLS_SERVICE is defined'
+
+- name: Renewal command set
+  set_fact:
+    renewal_command: >-
+      {{ certbot_executable }} renew
+      -n
+  when: 'TLS_LETSENCRYPT_TLS_SERVICE is not defined'
+  tags:
+    - 'cron'
+
+- name: Renewal ran once
+  command: '{{ renewal_command }}'
+  changed_when: false
+
+- name: Renewal automated via cron
+  cron:
+    user: root
+    hour: '*/12'
+    minute: '{{ 59 |random(seed=inventory_hostname) }}'
+    job: '{{ renewal_command }} --quiet'
+    name: 'certbot-renew'
+    state: 'present'
+  tags:
+    - 'cron'

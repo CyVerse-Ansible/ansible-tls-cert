@@ -1,23 +1,22 @@
 ---
 
 - include: get-cert-cn.yml
-  when: TLS_DEST_BASENAME is undefined
+  when: 'TLS_COMMON_NAME is undefined'
+
+- include: register-file-paths.yml
 
 - name: Certificate files copied to target
   tags: [certs-copied]
   copy:
-    src: "{{ item.src_path }}"
-    dest: "{{ item.dest_path }}"
+    src: '{{ item.src_path }}'
+    dest: '{{ item.dest_path }}'
   with_items:
-    - src_path: "{{ TLS_PRIVKEY_SRC_FILE }}"
-      dest_path: "{{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key"
-    - src_path: "{{ TLS_CERT_SRC_FILE }}"
-      dest_path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt"
-    - src_path: "{{ TLS_CACHAIN_SRC_FILE }}"
-      dest_path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt"
+    - src_path: '{{ TLS_BYO_PRIVKEY_SRC }}'
+      dest_path: '{{ TLS_PRIVKEY_PATH }}'
+    - src_path: '{{ TLS_BYO_CERT_SRC }}'
+      dest_path: '{{ TLS_CERT_PATH }}'
+    - src_path: '{{ TLS_BYO_CACHAIN_SRC }}'
+      dest_path: '{{ TLS_CACHAIN_PATH }}'
 
 - name: Full certificate chain created
-  shell: >
-    cat {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt
-    {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt >
-    {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt
+  shell: 'cat {{ TLS_CERT_PATH }} {{ TLS_CACHAIN_PATH }} > {{ TLS_FULLCHAIN_PATH }}'

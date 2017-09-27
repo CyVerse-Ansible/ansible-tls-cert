@@ -22,8 +22,8 @@ env:
     version: 16.04
   - distribution: ubuntu
     version: 14.04
-  - distribution: ubuntu
-    version: 12.04
+#  - distribution: ubuntu
+#    version: 12.04
 
 before_install:
   - 'sudo docker run -it --name=test_dummy --privileged --detach --volume="${PWD}":/etc/ansible/roles/role_under_test:rw cyverse/ansible-test:latest-${distribution}-${version} bash'

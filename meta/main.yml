@@ -29,8 +29,8 @@ galaxy_info:
   platforms:
   - name: EL
     versions:
-    - all
-    - 5
+    #- all
+    #- 5
     - 6
     - 7
   #- name: GenericUNIX
@@ -134,14 +134,14 @@ galaxy_info:
   #  - maverick
   #  - natty
   #  - oneiric
-    - precise
-    - quantal
-    - raring
-    - saucy
+    #- precise
+    #- quantal
+    #- raring
+    #- saucy
     - trusty
-    - utopic
-    - vivid
-    - wily
+    #- utopic
+    #- vivid
+    #- wily
     - xenial
   #- name: SLES
   #  versions:

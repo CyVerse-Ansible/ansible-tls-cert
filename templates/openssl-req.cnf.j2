@@ -12,7 +12,7 @@ ST           = 'Arizona')
 L            = 'Tucson')
 O            = 'Organization Name')
 OU           = 'Organization Division')
-CN           = {{ TLS_SUBJECT_ALTERNATE_NAME | default(ansible_fqdn) }}
+CN           = {{ TLS_COMMON_NAME }}
 emailAddress = 'test@example.com'
 
 [ server_req_extensions ]
@@ -24,4 +24,4 @@ subjectAltName         = @alternate_names
 nsComment              = "OpenSSL Generated Certificate"
 
 [ alternate_names ]
-DNS.1 = {{ TLS_SUBJECT_ALTERNATE_NAME | default(ansible_fqdn) }}
+DNS.1 = {{ TLS_COMMON_NAME }}
