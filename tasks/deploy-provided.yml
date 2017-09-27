@@ -20,6 +20,3 @@
 
 - name: Full certificate chain created
   shell: 'cat {{ TLS_CERT_PATH }} {{ TLS_CACHAIN_PATH }} > {{ TLS_FULLCHAIN_PATH }}'
-  when: fullchain_timestamp|failed or (key_timestamp.stdout|int()     > fullchain_timestamp.stdout|int())
-                                   or (crt_timestamp.stdout|int()     > fullchain_timestamp.stdout|int())
-                                   or (cachain_timestamp.stdout|int() > fullchain_timestamp.stdout|int())
