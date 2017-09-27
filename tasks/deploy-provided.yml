@@ -3,6 +3,8 @@
 - include: get-cert-cn.yml
   when: 'TLS_DEST_BASENAME is undefined'
 
+- include: register-file-paths.yml
+
 - name: Certificate files copied to target
   tags: [certs-copied]
   copy:
