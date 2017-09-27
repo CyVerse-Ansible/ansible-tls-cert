@@ -63,21 +63,21 @@
 
 - name: Test if cert already exists
   set_fact:
-    obtain_cert: true
-  when: 'cert_stat.exists'
+    le_obtain_cert: true
+  when: 'cert_stat.stat.islnk is not defined'
 
 - name: TLS-using service stopped prior to obtaining certificate
   service:
     name: '{{ TLS_LETSENCRYPT_TLS_SERVICE }}'
     state: 'stopped'
-  when: 'obtain_cert and TLS_LETSENCRYPT_TLS_SERVICE is defined'
+  when: 'le_obtain_cert == true and TLS_LETSENCRYPT_TLS_SERVICE is defined'
 
 - name: Ensure nothing is listening on port 443
   wait_for:
     port: '443'
     state: 'stopped'
     timeout: '10'
-  when: 'obtain_cert'
+  when: 'le_obtain_cert == true'
 
 - name: Certificate obtained
   command: >-
@@ -88,17 +88,17 @@
     --agree-tos
     --email {{ TLS_LETSENCRYPT_EMAIL }}
     --domain {{ TLS_COMMON_NAME }}
-  when: 'obtain_cert'
+  when: 'le_obtain_cert == true'
 
 - name: TLS-using service started after obtaining certificate
   service:
     name: '{{ TLS_LETSENCRYPT_TLS_SERVICE }}'
     state: 'started'
-  when: 'obtain_cert and TLS_LETSENCRYPT_TLS_SERVICE is defined'
+  when: 'le_obtain_cert == true and TLS_LETSENCRYPT_TLS_SERVICE is defined'
 
 - name: Renewal command set
   set_fact:
-    renewal_command: >
+    renewal_command: >-
       {{ certbot_executable }} renew
       --pre-hook "service {{ TLS_LETSENCRYPT_TLS_SERVICE }} stop"
       --post-hook "service {{ TLS_LETSENCRYPT_TLS_SERVICE }} start"
@@ -107,18 +107,24 @@
 
 - name: Renewal command set
   set_fact:
-    renewal_command: >
+    renewal_command: >-
       {{ certbot_executable }} renew
       -n
   when: 'TLS_LETSENCRYPT_TLS_SERVICE is not defined'
+  tags:
+    - 'cron'
 
 - name: Renewal ran once
   command: '{{ renewal_command }}'
+  changed_when: false
 
 - name: Renewal automated via cron
   cron:
+    user: root
     hour: '*/12'
-    minute: '{{ 59 | random(seed=inventory_hostname) }}'
+    minute: '{{ 59 |random(seed=inventory_hostname) }}'
     job: '{{ renewal_command }} --quiet'
     name: 'certbot-renew'
-    stae: 'present'
+    state: 'present'
+  tags:
+    - 'cron'

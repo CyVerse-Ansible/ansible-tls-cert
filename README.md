@@ -16,7 +16,7 @@ Supports Ubuntu LTS 14+ and CentOS 6+, adding support for other distros would be
 
 How to configure? Minimally:
 - If you want to deploy a provided certificate, define the `TLS_*_SRC_FILE` vars. (Ansible will look in "files" directory relative to playbook if you specify a bare filename or relative path.)
-- If you want to create+deploy a self-signed certificate, don't define any of `TLS_*_SRC_FILE`, and optionally, set `TLS_CREATE_SELFSIGNED: true`.
+- If you want to create+deploy a self-signed certificate, don't define any of `TLS_*_SRC_FILE`
 - If you want to use Let's Encrypt, set `TLS_LETSENCRYPT: true` and define `TLS_LETSENCRYPT_EMAIL`, consider also defining `TLS_LETSENCRYPT_TLS_SERVICE`
 - If not deploying a provided certificate, consider also setting `TLS_COMMON_NAME`
 
@@ -26,7 +26,6 @@ How to configure? Minimally:
 | TLS_CERT_SRC_FILE             | no                           |                     |             | Path to certificate on deployer system                                      |
 | TLS_CACHAIN_SRC_FILE          | no                           |                     |             | Path to CA chain on deployer system                                         |
 | TLS_COMMON_NAME               | no                           | ansible_fqdn        |             | The fully qualified domain for the certficate generated or obtained from LE |
-| TLS_CREATE_SELFSIGNED         | no                           | false               | true, false | Explicitly creates self-signed certificate                                  |
 | TLS_DEST_BASENAME             | no                           | provided cert CN*   |             | Base filename of installed certificate (ignored when using LE)              |
 | TLS_CERT_DEST_DIR             | no                           | (distro-specific**) |             | Directory for certificates on target host (ignored when using LE)           |
 | TLS_PRIVKEY_DEST_DIR          | no                           | (distro-specific**) |             | Directory for private keys on target host (ignored when using LE)           |
