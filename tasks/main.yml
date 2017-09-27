@@ -1,22 +1,37 @@
 ---
 
 - name: Distro-specific variables gathered
-  include_vars: "{{ item }}"
+  include_vars: '{{ item }}'
   with_first_found:
-    - "{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml"
-    - "{{ ansible_distribution }}.yml"
+    - '{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml'
+    - '{{ ansible_distribution }}.yml'
+
+- include: 'deploy-letsencrypt.yml'
+  when: >
+      TLS_LETSENCRYPT and
+      not TLS_CREATE_SELFSIGNED
 
 - name: Ensure distro default cert paths exist
   tags: [ensure-distro-cert-paths]
   file:
-    path: "{{ item }}"
+    path: '{{ item }}'
     state: directory
   with_items:
-    - "{{ TLS_PRIVKEY_DEST_DIR }}"
-    - "{{ TLS_CERT_DEST_DIR }}"
+    - '{{ TLS_PRIVKEY_DEST_DIR }}'
+    - '{{ TLS_CERT_DEST_DIR }}'
+  when: not TLS_LETSENCRYPT
+
+- name: File paths registered
+  set_fact:
+    TLS_PRIVKEY_PATH: '{{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key'
+    TLS_CERT_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt'
+    TLS_CACHAIN_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt'
+    TLS_FULLCHAIN_PATH: '{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt'
+  when: not TLS_LETSENCRYPT
 
 - include: deploy-provided.yml
   when: >
+      not TLS_LETSENCRYPT and
       not TLS_CREATE_SELFSIGNED and
       TLS_PRIVKEY_SRC_FILE is defined and
       TLS_CERT_SRC_FILE is defined and
@@ -24,14 +39,17 @@
 
 - include: deploy-selfsigned.yml
   when: >
+      not TLS_LETSENCRYPT and
       TLS_CREATE_SELFSIGNED or
       TLS_PRIVKEY_SRC_FILE is undefined or
       TLS_CERT_SRC_FILE is undefined or
       TLS_CACHAIN_SRC_FILE is undefined
 
 - name: Restricted file permissions set on private key
-  when: ansible_distribution == "CentOS"
+  when: >
+      not TLS_LETSENCRYPT and
+      ansible_distribution == "CentOS"
   file:
-    path: "{{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key"
+    path: '{{ TLS_PRIVKEY_PATH }}'
     owner: root
     mode: 0600

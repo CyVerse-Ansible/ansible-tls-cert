@@ -1,18 +1,18 @@
 ---
-- name: Create a directory to store temporary files
+- name: Directory created to store temporary files
   file:
-    path: "{{ role_path }}/build"
-    state: directory
+    path: '{{ role_path }}/build'
+    state: 'directory'
 
-- name: Generate ssl configuration file
+- name: openssl configuration file created
   template:
-    src: "{{ role_path }}/templates/openssl-req.cnf.j2"
-    dest: "{{ role_path }}/build/openssl-req.cnf"
+    src: '{{ role_path }}/templates/openssl-req.cnf.j2'
+    dest: '{{ role_path }}/build/openssl-req.cnf'
 
 - name: TLS_DEST_BASENAME set to "selfsigned" if not already overridden
   set_fact:
-    TLS_DEST_BASENAME: selfsigned
-  when: TLS_DEST_BASENAME is undefined
+    TLS_DEST_BASENAME: 'selfsigned'
+  when: 'TLS_DEST_BASENAME is undefined'
 
 - name: Self-signed certificate and private key created
   tags: [selfsigned-cert-created]
@@ -23,23 +23,23 @@
     -x509
     -nodes
     -days 3650
-    -keyout {{ TLS_PRIVKEY_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.key
-    -out {{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt
+    -keyout {{ TLS_PRIVKEY_PATH }}
+    -out {{ TLS_CERT_PATH }}
   args:
-    creates: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt"
+    creates: '{{ TLS_CERT_PATH }}'
 
 - name: Empty CA chain file created
   tags: [selfsigned-empty-bundle-created]
   file:
-    path: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.cachain.crt"
-    state: touch
+    path: '{{ TLS_CACHAIN_PATH }}'
+    state: 'touch'
   # The following two lines work around https://github.com/ansible/ansible-modules-core/issues/170
-  register: touch_log
-  changed_when: touch_log.diff.before.state != "file"
+  register: 'touch_log'
+  changed_when: 'touch_log.diff.before.state != "file"'
 
 - name: Full certificate chain (same as bare self-signed certificate) created
   tags: [selfsigned-fullchain-created]
   copy:
-    src: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.crt"
-    dest: "{{ TLS_CERT_DEST_DIR }}/{{ TLS_DEST_BASENAME }}.fullchain.crt"
+    src: '{{ TLS_CERT_PATH }}'
+    dest: '{{ TLS_CACHAIN_PATH }}'
     remote_src: true
