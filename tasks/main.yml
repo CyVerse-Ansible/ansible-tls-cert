@@ -7,7 +7,7 @@
     - '{{ ansible_distribution }}.yml'
 
 - include: 'deploy-letsencrypt.yml'
-  when: TLS_LETSENCRYPT_ENABLE is defined and TLS_LETSENCRYPT_ENABLE == true
+  when: TLS_LETSENCRYPT_ENABLE is defined
 
 - name: Ensure distro default cert paths exist
   tags: [ensure-distro-cert-paths]
@@ -17,25 +17,25 @@
   with_items:
     - '{{ TLS_PRIVKEY_DEST_DIR }}'
     - '{{ TLS_CERT_DEST_DIR }}'
-  when: TLS_LETSENCRYPT_ENABLE is not defined or TLS_LETSENCRYPT_ENABLE != true
+  when: TLS_LETSENCRYPT_ENABLE is not defined
 
 - include: deploy-provided.yml
   when: >
-      TLS_LETSENCRYPT_ENABLE is not defined or TLS_LETSENCRYPT_ENABLE != true and
+      TLS_LETSENCRYPT_ENABLE is not defined and
       TLS_BYO_PRIVKEY_SRC is defined and
       TLS_BYO_CERT_SRC is defined and
       TLS_BYO_CACHAIN_SRC is defined
 
 - include: deploy-selfsigned.yml
   when: >
-      TLS_LETSENCRYPT_ENABLE is not defined or TLS_LETSENCRYPT_ENABLE != true and
+      TLS_LETSENCRYPT_ENABLE is not defined and
       TLS_BYO_PRIVKEY_SRC is not defined and
       TLS_BYO_CERT_SRC is not defined and
       TLS_BYO_CACHAIN_SRC is not defined
 
 - name: Restricted file permissions set on private key
   when: >
-      TLS_LETSENCRYPT_ENABLE is not defined or TLS_LETSENCRYPT_ENABLE != true and
+      TLS_LETSENCRYPT_ENABLE is not defined and
       ansible_distribution == "CentOS"
   file:
     path: '{{ TLS_PRIVKEY_PATH }}'
