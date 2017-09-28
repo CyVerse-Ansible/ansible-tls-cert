@@ -2,5 +2,6 @@
 
 TLS_CREATE_SELFSIGNED: false
 TLS_COMMON_NAME: '{{ ansible_fqdn }}'
+TLS_DEST_BASENAME: '{{ TLS_COMMON_NAME }}'
 certbot_executable: 'certbot'
 le_obtain_cert: 'false'
