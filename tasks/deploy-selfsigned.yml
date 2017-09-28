@@ -43,5 +43,5 @@
   tags: [selfsigned-fullchain-created]
   copy:
     src: '{{ TLS_CERT_PATH }}'
-    dest: '{{ TLS_CACHAIN_PATH }}'
+    dest: '{{ TLS_FULLCHAIN_PATH }}'
     remote_src: true
