@@ -6,7 +6,7 @@
     - '{{ ansible_distribution }}-{{ ansible_distribution_major_version}}.yml'
     - '{{ ansible_distribution }}.yml'
 
-- include: 'deploy-letsencrypt.yml'
+- import_tasks: 'deploy-letsencrypt.yml'
   when: TLS_LETSENCRYPT_ENABLE is defined
 
 - name: Ensure distro default cert paths exist
@@ -19,14 +19,14 @@
     - '{{ TLS_CERT_DEST_DIR }}'
   when: TLS_LETSENCRYPT_ENABLE is not defined
 
-- include: deploy-provided.yml
+- import_tasks: deploy-provided.yml
   when: >
       TLS_LETSENCRYPT_ENABLE is not defined and
       TLS_BYO_PRIVKEY_SRC is defined and
       TLS_BYO_CERT_SRC is defined and
       TLS_BYO_CACHAIN_SRC is defined
 
-- include: deploy-selfsigned.yml
+- import_tasks: deploy-selfsigned.yml
   when: >
       TLS_LETSENCRYPT_ENABLE is not defined and
       TLS_BYO_PRIVKEY_SRC is not defined and

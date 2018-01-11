@@ -1,9 +1,9 @@
 ---
 
-- include: get-cert-cn.yml
+- import_tasks: get-cert-cn.yml
   when: 'TLS_COMMON_NAME is undefined'
 
-- include: register-file-paths.yml
+- import_tasks: register-file-paths.yml
 
 - name: Certificate files copied to target
   tags: [certs-copied]
