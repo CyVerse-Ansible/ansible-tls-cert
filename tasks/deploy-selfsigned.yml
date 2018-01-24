@@ -14,7 +14,7 @@
     TLS_DEST_BASENAME: 'selfsigned'
   when: 'TLS_DEST_BASENAME is undefined'
 
-- include: register-file-paths.yml
+- import_tasks: register-file-paths.yml
 
 - name: Self-signed certificate and private key created
   tags: [selfsigned-cert-created]
