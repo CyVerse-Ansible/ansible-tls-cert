@@ -71,6 +71,7 @@
     name: '{{ TLS_LETSENCRYPT_TLS_SERVICE }}'
     state: 'stopped'
   when: 'le_obtain_cert == true and TLS_LETSENCRYPT_TLS_SERVICE is defined'
+  failed_when: false
 
 - name: Ensure nothing is listening on port 443
   wait_for:
@@ -95,6 +96,7 @@
     name: '{{ TLS_LETSENCRYPT_TLS_SERVICE }}'
     state: 'started'
   when: 'le_obtain_cert == true and TLS_LETSENCRYPT_TLS_SERVICE is defined'
+  failed_when: false
 
 - name: Renewal command set
   set_fact:
